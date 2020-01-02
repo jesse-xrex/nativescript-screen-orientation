@@ -2,9 +2,7 @@
  * Created by Sumeet on 06/04/17.
  */
 
-
-var frameModule = require("ui/frame");
-
+var { Frame } = require("tns-core-modules/ui/frame");
 
 /**
  * find the exact object by which the property is owned in the prototype chain
@@ -13,27 +11,29 @@ var frameModule = require("ui/frame");
  * @returns {*}
  */
 
-function findPrototypeForProperty(object,property){
-    while(false==object.hasOwnProperty(property)){
-        object = Object.getPrototypeOf(object);
-    }
-    return object;
+function findPrototypeForProperty(object, property) {
+  while (false == object.hasOwnProperty(property)) {
+    object = Object.getPrototypeOf(object);
+  }
+  return object;
 }
 
 /**
  * set should auto rotate
  * @param bool
  */
-function setShouldAutoRotate(bool){
-    var prototypeForNavController = findPrototypeForProperty(frameModule.topmost().ios.controller,"shouldAutorotate");
-    Object.defineProperty(prototypeForNavController,"shouldAutorotate",{
-        configurable:true,
-        enumerable:false,
-        get:function(){
-            return bool;
-        }
-    })
-
+function setShouldAutoRotate(bool) {
+  var prototypeForNavController = findPrototypeForProperty(
+    Frame.topmost().ios.controller,
+    "shouldAutorotate"
+  );
+  Object.defineProperty(prototypeForNavController, "shouldAutorotate", {
+    configurable: true,
+    enumerable: false,
+    get: function() {
+      return bool;
+    }
+  });
 }
 
 /**
@@ -41,35 +41,34 @@ function setShouldAutoRotate(bool){
  * @param orientationType
  * @param callback
  */
-function setCurrentOrientation(orientationType,callback){
-
-    if("landscape"==orientationType.toLowerCase()){
-        UIDevice.currentDevice.setValueForKey(UIInterfaceOrientationLandscapeLeft,"orientation");
-        setShouldAutoRotate(false);
-    }
-    else if("portrait"==orientationType.toLowerCase()){
-        UIDevice.currentDevice.setValueForKey(UIInterfaceOrientationPortrait,"orientation");
-        setShouldAutoRotate(false);
-
-    }else if("all" == orientationType.toLowerCase()){
-        setShouldAutoRotate(true);
-    }
-    if(undefined!==callback){
-        callback();
-    }
-
+function setCurrentOrientation(orientationType, callback) {
+  if ("landscape" == orientationType.toLowerCase()) {
+    UIDevice.currentDevice.setValueForKey(
+      UIInterfaceOrientationLandscapeLeft,
+      "orientation"
+    );
+    setShouldAutoRotate(false);
+  } else if ("portrait" == orientationType.toLowerCase()) {
+    UIDevice.currentDevice.setValueForKey(
+      UIInterfaceOrientationPortrait,
+      "orientation"
+    );
+    setShouldAutoRotate(false);
+  } else if ("all" == orientationType.toLowerCase()) {
+    setShouldAutoRotate(true);
+  }
+  if (undefined !== callback) {
+    callback();
+  }
 }
 
 /**
  * clean up the orientation
  */
-function cleanupOrientation(){
-    setShouldAutoRotate(true);
+function cleanupOrientation() {
+  setShouldAutoRotate(true);
 }
 
+exports.setCurrentOrientation = setCurrentOrientation;
 
-exports.setCurrentOrientation=setCurrentOrientation;
-
-
-exports.orientationCleanup=cleanupOrientation;
-
+exports.orientationCleanup = cleanupOrientation;
