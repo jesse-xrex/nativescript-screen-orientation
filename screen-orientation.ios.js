@@ -23,8 +23,11 @@ function findPrototypeForProperty(object, property) {
  * @param bool
  */
 function setShouldAutoRotate(bool) {
+  var topmostFrame = Frame.topmost();
+  if (!topmostFrame) return;
+
   var prototypeForNavController = findPrototypeForProperty(
-    Frame.topmost().ios.controller,
+    topmostFrame.ios.controller,
     "shouldAutorotate"
   );
   Object.defineProperty(prototypeForNavController, "shouldAutorotate", {
